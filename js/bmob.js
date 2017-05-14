@@ -1,6 +1,7 @@
 var BmobTest = {
     init: function(){
-    	Bmob.initialize("9b70739f697130cb5cc760915aba2430", "e8f67fd824bca45c9cc406c5daca8a2f");
+    	// your Bmob message
+    	Bmob.initialize("", "");
     },
 	getLoginUser: function(){
 		var user = Bmob.Object.extend("User");
