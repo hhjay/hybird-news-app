@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>新闻内容</title>
+    <link rel="stylesheet" href="../css/page.css" />
+</head>
+<body>
+<div id="app" class="not-login">
+	<div class="g-header">
+		<a class="back" href="./not-list.html">
+        	<i class="ds-icon-back"></i>
+        </a>
+		<div class="header-box" @click="popoverHeader = true">
+        	<div class="sign-out"><i class="ds-icon-chart-bar"></i></div>
+		</div>
+	</div>
+
+	<div class="main-contain">
+		<div class="news-title">
+			<h3>{{ title }}</h3>
+			<span>作者：{{ author }}</span>
+		</div>
+		<div class="new-contain" v-html="main"></div>
+		<div class="new-opreat">
+			<el-button class="ds-button like" @click="popoverHeader = true">
+				<i class="ds-icon-like"></i>
+				<span>12</span>
+			</el-button>
+			<el-button class="ds-button" @click="popoverHeader = true">评论</el-button>
+		</div>
+	</div>
+	<el-dialog
+		class="ds-dialog"
+	  	title="提示"
+	  	v-model="popoverHeader"
+	  	size="large"
+	>
+	  		<span>为了保证你拥有更好的用户体验，请先进行点击以下按钮进行登录或者注册！</span>
+			<span slot="footer" class="dialog-footer">
+			    <el-button class="ds-button" size="mini" type="blue" @click="">
+					<a href="./login.html?form=login">登录</a>
+			    </el-button>
+				<el-button class="ds-button" size="mini" type="green">
+					<a href="./login.html?from=reg">注册</a>
+				</el-button>
+			</span>
+	</el-dialog>
+	<div class="g-footer">
+		<p class="footer-box">
+	        ©&nbsp;2017&nbsp;中南民族大学&nbsp;Ltt
+		</p>
+	</div>
+</div>
+
+<!-- 先引入 Vue -->
+<script src="../js/lib/vue2.js"></script>
+<!-- 引入组件库 -->
+<script src="../js/lib/element-ui.js"></script>
+<script src="../js/lib/bmob.js"></script>
+<script>
+let vm = new Vue({
+    el: '#app',
+    name: "news",
+    data: function(){
+    	return {
+    		popoverHeader: false,
+    		commentStr: "",
+    		title: "",
+    		author: "",
+    		main: ""
+    	}
+    },
+    methods: {
+    	
+    }
+});
+
+var BmobTest = {
+    init: function(){
+    	Bmob.initialize("9b70739f697130cb5cc760915aba2430", "e8f67fd824bca45c9cc406c5daca8a2f");
+    },
+	get: function(){
+		var art = Bmob.Object.extend("Article");
+	    var query = new Bmob.Query(art);
+	    let bId = location.href.split("=")[1];
+
+	    query.get(bId, {
+		  	success: function(obj) {
+		    	// 查询成功，调用get方法获取对应属性的值
+		    	vm.title = obj.attributes.aTitle;
+		    	vm.author = obj.attributes.aAuthor;
+		    	vm.main = obj.attributes.aContain;
+		  	},
+		  	error: function(object, error) {
+		    	// 查询失败
+		  	}
+		});
+	}
+}
+BmobTest.init();
+BmobTest.get();
+
+</script>
+</body>
+</html>

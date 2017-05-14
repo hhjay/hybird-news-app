@@ -1,0 +1,56 @@
+{
+  "index.html": {
+    "resources": [
+      "js/element-ui.js",
+      "js/vue2.js",
+      "css/element-ui.css",
+      "css/lib/loyout.css",
+      "css/lib/element-ui.css",
+      "css/login.css",
+      "css/lib/ds-app-ui.css",
+      "img/login-bg.png",
+      "css/lib/fonts/icomoon.ttf"
+    ],
+    "refer": []
+  },
+  "app/login.html": {
+    "resources": [
+      "js/lib/element-ui.js",
+      "css/lib/layout.css",
+      "js/lib/vuex.js",
+      "css/lib/fonts/icomoon.ttf",
+      "css/lib/element-ui.css",
+      "js/lib/bmob.js",
+      "css/login.css",
+      "css/lib/ds-app-ui.css",
+      "img/login-bg.png",
+      "js/lib/vue2.js",
+      "app/news-list.html"
+    ],
+    "refer": []
+  },
+  "app/news-list.html": {
+    "resources": [
+      "js/lib/vue-router.js",
+      "css/news.css",
+      "css/lib/fonts/element-icons.woff",
+      "app/not-list.html",
+      "app/news-page.html"
+    ],
+    "refer": []
+  },
+  "app/not-list.html": {
+    "resources": [
+      "css/news.css",
+      "app/login.html"
+    ],
+    "refer": []
+  },
+  "app/news-page.html": {
+    "resources": [
+      "css/page.css",
+      "app/news-list.html"
+    ],
+    "refer": []
+  }
+}

@@ -1,0 +1,43 @@
+@import url("./lib/layout.css");
+
+.main-contain{
+	
+}
+.news-title{
+	width: 90%;
+	padding: 6px;
+	margin: 13px auto;
+	background-color: #fff;
+	text-align: center;
+}
+.news-title h3{
+	font-size: 16px;
+}
+.news-title span{
+	width: 100%;
+	display: inline-block;
+	text-align: right;
+}
+.new-contain{
+	margin: 0px 6px 13px;
+	padding: 6px;
+	background-color: #fff;
+}
+.new-contain p{
+	text-indent: 2em;
+}
+.new-opreat{
+	text-align: right;
+	margin-top: 6px;
+	margin-right: 13px;
+}
+.new-opreat .ds-button{
+	min-width: 20px;
+	padding: 2px 6px;
+	height: 26px;
+}
+.new-comment{
+	background-color: #fff;
+	margin: 13px 6px 0;
+	padding: 6px 12px;
+}

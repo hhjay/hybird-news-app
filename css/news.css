@@ -1,0 +1,51 @@
+@import url("./lib/layout.css");
+
+.news{
+	/*margin: 16px 16px 0;*/
+	margin-top: 16px;
+	padding: 8px;
+	background-color: #fff;
+}
+.news .news-title{
+	line-height: 18px;
+}
+.news a{
+	color: #738edf;
+}
+.news .new-opreat{
+	text-align: right;
+	margin-top: 6px;
+	position: relative;
+}
+.news-title .ds-tag{
+	position: absolute;
+	right: 10px;
+}
+.new-comment .ds-button, .new-opreat .ds-button{
+	min-width: 20px;
+	padding: 2px 6px;
+	height: 26px;
+}
+.new-opreat .ds-button.ds-button--more{
+	position: absolute;
+    top: -33px;
+    right: 9px;
+    border: none;
+    width: 52px;
+    color: #738edf;
+}
+.news-main{
+	margin: 10px 0px;
+	line-height: 20px;
+	max-height: 60px;
+	overflow: hidden;
+}
+.news-main p{
+	text-indent: 2em;
+}
+.new-comment{
+	border-top: 1px solid #eaeaea;
+    margin-top: 10px;
+    padding-top: 8px;
+    text-indent: 2em;
+}

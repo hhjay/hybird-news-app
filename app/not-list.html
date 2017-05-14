@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>新闻列表</title>
+    <link rel="stylesheet" href="../css/news.css" />
+</head>
+<body>
+<div id="app" class="not-login" v-loading.fullscreen.lock="bodyLoad">
+	<div class="g-header">
+		<div class="header-box" @click="popoverHeader = true">
+        	<div class="sign-out"><i class="ds-icon-chart-bar"></i></div>
+		</div>
+	</div>
+	<div class="main-contain">
+		<div class="news" v-for="(item, index) in currentArtList" v-if="currentArtList.length != 0">
+			<div class="news-title">
+				{{ (currentPage-1) * 5 + index+1 }}、<a :href='"./not-main.html?bId="+ item.bmobId'>{{ item.aTitle }}</a>
+			</div>
+			<div class="news-main" v-html="item.aContain"></div>
+			<div class="new-opreat">
+				<a :href='"./not-main.html?bId="+ item.bmobId'>
+					<el-button class="ds-button ds-button--more">更多...</el-button>
+				</a>
+			</div>
+		</div>
+		<el-pagination
+			class="ds-pagination"
+		    @current-change="handleCurrentChange"
+		    :current-page="currentPage"
+		  	:page-size="5"
+		   	layout="prev, pager, next"
+	     	:total="article.length"
+		>
+	    </el-pagination>
+	</div>
+	<el-dialog
+		class="ds-dialog"
+	  	title="提示"
+	  	v-model="popoverHeader"
+	  	size="large"
+	>
+	  		<span>为了保证你拥有更好的用户体验，请先进行点击以下按钮进行登录或者注册！</span>
+			<span slot="footer" class="dialog-footer">
+			    <el-button class="ds-button" size="mini" type="blue" @click="">
+					<a href="./login.html?form=login">登录</a>
+			    </el-button>
+				<el-button class="ds-button" size="mini" type="green">
+					<a href="./login.html?from=reg">注册</a>
+				</el-button>
+			</span>
+	</el-dialog>
+	<div class="g-footer">
+		<p class="footer-box">
+	        ©&nbsp;2017&nbsp;中南民族大学&nbsp;Ltt
+		</p>
+	</div>
+</div>
+
+<script src="../js/lib/vue2.js"></script>
+<!-- 引入组件库 -->
+<script src="../js/lib/element-ui.js"></script>
+<script src="../js/lib/bmob.js"></script>
+<script>
+let vm = new Vue({
+    el: '#app',
+    data: function(){
+    	return {
+    		commentStr: "",
+    		popoverHeader: false,
+    		article: [],
+    		currentPage: 1,
+    		bodyLoad: true,
+    		currentArtList: []
+    	}
+    },
+    methods: {
+    	handleCurrentChange(index){
+    		this.currentPage = index;
+    		let start = index, end = index + 5;
+    		if(end > this.article.length){
+    			end = this.article.length;
+    		}
+	      	currentList(start, end);
+    	}
+    }
+});
+
+var BmobTest = {
+    init: function(){
+    	Bmob.initialize("9b70739f697130cb5cc760915aba2430", "e8f67fd824bca45c9cc406c5daca8a2f");
+    },
+	get: function(){
+		var art = Bmob.Object.extend("Article");
+	    var query = new Bmob.Query(art);
+	    query.find({
+	      	success: function(obj) {
+	      		let list = [];
+	      		for(let i in obj){
+	      			let temp = obj[i].attributes;
+	      			temp.bmobId = obj[i].id;
+	      			list.push(temp);
+	      		}
+	      		vm.article = list;
+	      		currentList(0, 5);
+	      		vm.bodyLoad = false;
+		    },
+		    error: function(obj, error) {
+		        console.error(obj, error);
+		    }
+	    });
+	}
+}
+BmobTest.init();
+BmobTest.get();
+
+function currentList(start, end){
+	vm.currentArtList = [];
+	for(let i = start; i < end; i++){
+	    vm.currentArtList.push(vm.article[i]);
+	}
+}
+</script>
+</body>
+</html>

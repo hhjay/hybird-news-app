@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>新闻内容</title>
+    <link rel="stylesheet" href="../css/page.css" />
+</head>
+<body>
+<div id="app">
+	<div class="g-header">
+        <a class="back" href="./news-list.html">
+        	<i class="ds-icon-back"></i>
+        </a>
+		
+		<div class="header-box">
+			<div class="litpic"></div> <div class="name">欢迎，{{ uName }}</div>
+        	<div class="sign-out" @click="logout"></div>
+		</div>
+	</div>
+	<div class="main-contain">
+		<div class="news-title">
+			<h3>{{ user.aTitle }}</h3>
+			<span>作者：{{ user.aAuthor }}</span>
+		</div>
+		<div class="new-contain" v-html="user.aContain"></div>
+		<div class="new-comment" v-for="(comm, index1) in commentList" :key="index1" 
+				v-if="commentList.length != 0">
+				<span>{{ comm.uName ? comm.uName : "未知用户" }} 说 ：</span><span>{{ comm.cComment }}</span>
+			</div>
+		<div class="new-opreat">
+			<el-popover
+			  	ref="popover0"
+			  	placement="bottom"
+			  	popper-class="popover-news page-news"
+			  	v-model="popoverComment"
+			>
+				<div class="popover-body">
+					<el-input class="ds-input" v-model="commentStr" placeholder="请输入评论内容"></el-input>
+					<el-button class="ds-button" size="small" @click="popoverComment = false">取消</el-button>
+					<el-button class="ds-button" type="blue" size="small" @click="confirmComment">确定</el-button>
+				</div>
+			</el-popover>
+			<el-button class="ds-button like">
+				<i class="ds-icon-like"></i>
+				<span>12</span>
+			</el-button>
+			<el-button type="green" v-popover:popover0 class="ds-button">评论</el-button>
+		</div>
+	</div>
+	<div class="g-footer">
+		<p class="footer-box">
+	        ©&nbsp;2017&nbsp;中南民族大学&nbsp;Ltt
+		</p>
+	</div>
+</div>
+
+<script src="../js/lib/vue2.js"></script>
+<script src="../js/lib/vue-router.js"></script>
+<!-- 引入组件库 -->
+<script src="../js/lib/element-ui.js"></script>
+<script src="../js/lib/bmob.js"></script>
+<!-- 先引入 Vue -->
+<!-- 引入组件库 -->
+
+<!-- BMOB数据库 -->
+<script src="../js/lib/bmob.js"></script>
+<script>
+let vm = new Vue({
+    el: '#app',
+    name: "news",
+    data: function(){
+    	return {
+    		popoverComment: false,
+    		uName: sessionStorage.getItem("uName"),
+    		uId: sessionStorage.getItem("uId"),
+    		commentStr: "",
+    		user: {},
+    		commentList: [],
+    		userList: []
+    	}
+    },
+    methods: {
+    	logout(){
+    		sessionStorage.clear();
+    		this.$message({
+	          	customClass: "ds-message",
+	          	message: '注销成功',
+	          	duration: 0,
+	          	type: 'warning'
+	        });
+	        setTimeout(() => {
+				window.location.assign("./not-list.html");
+			}, 1200);
+    	},
+    	commentConfirm(index){
+			let obj = {
+				uId: parseInt(this.uId),
+				cTime: parseInt(new Date().getTime() / 1000),
+				cComment: this.currentArtList[index].commentStr,
+				aId: parseInt(this.currentArtList[index].aId)
+			}
+    		BmobTest.addComment(obj);
+    		setTimeout(() => {
+    			this.currentArtList[index].commentFlag = false;
+			}, 1200);
+    	},
+    	confirmComment(){
+    		let obj = {
+				uId: parseInt(this.uId),
+				cTime: parseInt(new Date().getTime() / 1000),
+				cComment: this.commentStr,
+				aId: parseInt(this.user.aId)
+			}
+    		BmobTest.addComment(obj);
+    		setTimeout(() => {
+    			this.popoverComment = false;
+    			BmobTest.getComment();
+			}, 1200);
+    	}
+    }
+})
+var BmobTest = {
+    init: function(){
+    	Bmob.initialize("9b70739f697130cb5cc760915aba2430", "e8f67fd824bca45c9cc406c5daca8a2f");
+    },
+	get: function(){
+		var art = Bmob.Object.extend("Article");
+	    var query = new Bmob.Query(art);
+	    let bId = location.href.split("=")[1];
+
+	    query.get(bId, {
+		  	success: function(obj) {
+		    	// 查询成功，调用get方法获取对应属性的值
+				vm.user = obj.attributes;
+		  	},
+		  	error: function(object, error) {
+		    	// 查询失败
+		  	}
+		});
+	},
+	getUser: function(){
+		var CommentL = Bmob.Object.extend("iUser");
+	    var query = new Bmob.Query(CommentL);
+	    query.find({
+	      	success: function(obj) {
+	      		let list = [];
+	      		for(let i in obj){
+	      			let temp = obj[i].attributes; 
+	      			list.push(temp);
+	      		}
+		      	vm.userList = list;
+		    },
+		    error: function(obj, error) {
+		        console.error(obj, error);
+		    }
+	    });
+	},
+	getComment: function(){
+		var CommentL = Bmob.Object.extend("comment");
+	    var query = new Bmob.Query(CommentL);
+	    query.find({
+	      	success: function(obj) {
+	      		setTimeout(()=>{
+	      			let list = [];
+	      			for(let i = 0; i < obj.length; i++){
+	      				let temp = obj[i].attributes;
+	      				for(let j = 0; j < vm.userList.length; j++){
+	      					if(vm.userList[j].uId = obj[i].attributes.uId){
+	      						temp.uName = vm.userList[j].uName;
+	      						break;
+	      					}
+	      				}
+	      				list.push(temp);
+	      			}
+	      			vm.commentList = list;
+	      		}, 2000);
+		    },
+		    error: function(obj, error) {
+		        console.error(obj, error);
+		    }
+	    });
+	},
+	addComment: function(obj){
+		// 数据库
+		var CommentL = Bmob.Object.extend("comment");
+		var iComment = new CommentL();
+	    // 插入反馈
+	    iComment.save(obj, {
+		    success: function(object) {
+		        vm.$message({
+		          	customClass: "ds-message",
+		          	message: '评论成功',
+		          	type: 'success'
+		        });
+		    },
+		    error: function(model, error) {
+		    	console.error(model, error);
+		    }
+	    });
+	},
+};
+
+BmobTest.init();
+BmobTest.getUser();
+BmobTest.get();
+BmobTest.getComment();
+</script>
+</body>
+</html>

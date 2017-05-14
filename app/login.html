@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>登录.注册</title>
+    <!--<link rel="stylesheet" href="./css/lib/element-ui.css" />-->
+    <link rel="stylesheet" href="../css/login.css" />
+</head>
+<body>
+<div id="app">
+	<div class="login" v-loading.fullscreen.lock="bodyLoad">
+		<el-popover
+		  	ref="popover0"
+		  	placement="top"
+		  	popper-class="popover-login"
+		  	v-model="popoverLogin"
+		>
+			<p class="popover-header">点击一下按钮进行第三方验证登录！</p>
+			<div class="popover-body">
+			    <el-button class="ds-button" size="mini" type="blue" @click="tryLogin('wb')">
+			    	<i class="ds-icon-weibo"></i>
+			    	<span>微博</span>
+			    </el-button>
+				<el-button class="ds-button" size="mini" type="blue" @click="tryLogin('wx')">
+			    	<i class="ds-icon-weixin"></i>
+			    	<span>微信</span>
+			    </el-button>
+			    <el-button class="ds-button" size="mini" type="blue" @click="tryLogin('qq')">
+			    	<i class="ds-icon-weibo"></i>
+			    	<span>qq</span>
+			    </el-button>
+			</div>
+		</el-popover>
+
+		<el-popover
+		  	ref="popover1"
+		  	placement="top"
+		  	popper-class="popover-login"
+		>
+			<p class="popover-header">
+				<span v-if="regLoad">点击以下按钮进行第三方注册！</span>
+				<span v-else>请完成以下信息</span>
+			</p>
+			<div class="popover-body">
+			   	<div v-if="regLoad">
+				   	<el-button class="ds-button" size="mini" type="blue" @click="tryReg('wb')">
+				    	<i class="ds-icon-weibo"></i>
+				    	<span>微博</span>
+				    </el-button>
+					<el-button class="ds-button" size="mini" type="blue" @click="tryReg('wx')">
+				    	<i class="ds-icon-weixin"></i>
+				    	<span>微信</span>
+				    </el-button>
+				    <el-button class="ds-button" size="mini" type="blue" @click="tryReg('qq')">
+				    	<i class="ds-icon-weibo"></i>
+				    	<span>qq</span>
+				    </el-button>
+				</div>
+				<div v-else>
+					<el-input class="ds-input" v-model="regName" placeholder="请输入内容"></el-input>
+					<div class="popover-next">
+						<el-button class="ds-button" size="mini" type="blue" @click="saveReg">下一步</el-button>
+					</div>
+				</div>
+			</div>
+		</el-popover>
+
+		<div class="login-header">
+  			<el-button v-popover:popover0 class="ds-button" :type='loginFlag ? "blue" : ""' @click="loginFlag = true">登录</el-button>
+  			<el-button v-popover:popover1 class="ds-button" :type='!loginFlag ? "blue" : ""' @click="loginFlag = false">首次注册</el-button>
+		</div>
+	</div>
+	<div class="g-footer login-footer">
+		<p class="footer-box">
+	        ©&nbsp;2017&nbsp;中南民族大学&nbsp;Ltt
+		</p>
+	</div>
+</div>
+<!-- 先引入 Vue -->
+<script src="../js/lib/vue2.js"></script>
+<!--<script src="../js/lib/vue-router.js"></script>-->
+<script src="../js/lib/vuex.js"></script>
+<!-- 引入组件库 -->
+<script src="../js/lib/element-ui.js"></script>
+<script src="../js/lib/bmob.js"></script>
+<script>
+//const store = new Vuex.Store({
+//  state: {
+//	    userInfo: {
+//	    	uName: "",
+//	    	uId: 1,
+//	    }
+//  },
+//  mutations: {
+//  	setUserInfo: (state, data) => { // 用户信息
+//	        state.userInfo = data;
+//	    }
+//  },
+//  actions: {
+//  	setUserInfo: ({
+//	        commit
+//	    }, data) => {
+//	        commit("setUserInfo", data);
+//	    },
+//  },
+//  getters: {
+//  	getUserInfo: (state) => {
+//	        return state.userInfo;
+//	    }
+//  }
+//});
+
+const vm = new Vue({
+    el: '#app',
+    created: function(){
+    	if(location.href.split("=")[1] == "login"){
+    		this.loginFlag = true;
+    	}
+    },
+    data: function() {
+      	return {
+      		bodyLoad: false,
+      		loginFlag: false,
+      		popoverLogin: false,
+      		regName: "",
+      		regLoad: true,
+      		regType: "",
+      		user: []
+      	}
+    },
+    methods: {
+    	tryLogin(type){
+    		for(let i = 0; i < this.user.length; i++){
+    			if(this.user[i].uNet == type){
+    				//TODO暂时不用vuex
+    				//store.commit('setUserInfo', {
+    				//	uName: this.user[i].uName,
+    				//	uId: this.user[i].uId
+    				//})
+    				sessionStorage.setItem("uName", this.user[i].uName);
+    				sessionStorage.setItem("uId", this.user[i].uId);
+    				
+    				this.bodyLoad = true;
+			        setTimeout(() => {
+			          	this.bodyLoad = false;
+			          	window.location.assign("./news-list.html");
+			        }, 1200);
+    				break;
+    			}
+    		}
+    	},
+    	tryReg(type){
+    		this.regType = type;
+    		this.regLoad = false;
+    	},
+    	regOrLogin(){
+    		console.log();
+    	},
+    	saveReg(){
+    		if(this.regName == ""){
+    			this.$message({
+		          	customClass: "ds-message",
+		          	message: '请输入花名',
+		          	type: 'error'
+		        });
+    		}else{
+	    		let obj = {
+	    			uNet: this.regType,
+	    			uName: this.regName,
+	    			uTime: parseInt(new Date().getTime() / 1000)
+	    		}
+	    		BmobTest.addUser(obj);
+    		}
+    	}
+    },
+    components: {
+    	app: app
+    }
+})
+
+
+
+const BmobTest = {
+    init: function(){
+    	Bmob.initialize("9b70739f697130cb5cc760915aba2430", "e8f67fd824bca45c9cc406c5daca8a2f");
+    },
+    addUser: function(obj){
+		var CommentL = Bmob.Object.extend("iUser");
+		var iComment = new CommentL();
+	    // 插入反馈
+	    iComment.save(obj, {
+		    success: function(object) {
+		        vm.$message({
+		          	customClass: "ds-message",
+		          	message: '注册成功',
+		          	type: 'success'
+		        });
+		        sessionStorage.setItem("uName", object.attributes.uName);
+
+				BmobTest.getRegUser(object.id);
+				setTimeout(() => {
+					window.location.assign("./news-list.html");
+				}, 1200);
+		    },
+		    error: function(model, error) {
+		    	console.error(model, error);
+		    }
+	    });
+    },
+    getRegUser: function(id){
+    	var user = Bmob.Object.extend("iUser");
+		var query = new Bmob.Query(user);
+		query.get(id, {
+		  	success: function(obj) {
+    			sessionStorage.setItem("uId", obj.attributes.uId);
+		  	},
+		  	error: function(object, error) {
+		    	// 查询失败
+		  	}
+		});
+    },
+	getLoginUser: function(){
+		var user = Bmob.Object.extend("iUser");
+	    var query = new Bmob.Query(user);
+	 	query.find({
+	      	success: function(obj) {
+				let list = [];
+				for(let i in obj){
+					list.push(obj[i].attributes);
+				}
+				vm.user = list;
+		    },
+		    error: function(obj, error) {
+		        console.error(obj, error);
+		    }
+	   });
+	}
+}
+BmobTest.init();
+BmobTest.getLoginUser();
+
+</script>
+</body>
+</html>
